@@ -1,1 +1,26 @@
-{"updated":"1970-01-01T00:00:00+00:00","searches":[]}
+{
+ "updated": "2026-08-12T09:51:19.786161+00:00",
+ "searches": [
+  {
+   "id": "land-astana",
+   "title": "Участки — Астана",
+   "type": "land",
+   "url": "https://krisha.kz/prodazha/uchastkov/astana/",
+   "items": []
+  },
+  {
+   "id": "land-akmola",
+   "title": "Участки — близ Астаны (Акмолинская обл.)",
+   "type": "land",
+   "url": "https://krisha.kz/prodazha/uchastkov/akmolinskaja-oblast/",
+   "items": []
+  },
+  {
+   "id": "flat-example",
+   "title": "2-комн. квартира, Есиль, до 40 млн",
+   "type": "flat",
+   "url": "https://krisha.kz/prodazha/kvartiry/astana-esilskij/?das[live.rooms]=2&das[price][to]=40000000",
+   "items": []
+  }
+ ]
+}
