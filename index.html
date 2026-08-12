@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1C3A2E">
+<link rel="manifest" href="manifest.json">
+<title>Земля и квартиры · Астана</title>
+<style>
+:root{
+  --ink:#1B2420; --paper:#F2F4F1; --card:#FFFFFF; --line:#DDE3DD;
+  --green:#1C3A2E; --green-soft:#E4EEE7; --sand:#B98A3C; --sand-soft:#F5EBD9;
+  --blue:#2E5B8A; --blue-soft:#E3ECF5; --new:#C24A22; --muted:#6B776F;
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0}
+body{font:16px/1.45 -apple-system,'Segoe UI',Roboto,sans-serif;background:var(--paper);color:var(--ink);
+  padding-bottom:env(safe-area-inset-bottom)}
+header{background:var(--green);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 18px 14px}
+header h1{font-size:19px;font-weight:700;letter-spacing:.2px}
+header .upd{font-size:12.5px;opacity:.75;margin-top:2px}
+main{max-width:680px;margin:0 auto;padding:14px}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tabs button{flex:1;padding:10px;border:1px solid var(--line);border-radius:var(--r);
+  background:var(--card);font-size:14.5px;font-weight:600;color:var(--muted);cursor:pointer}
+.tabs button.on{background:var(--green);border-color:var(--green);color:#fff}
+section.search{margin-bottom:20px}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 2px 8px}
+.sec-head h2{font-size:15.5px;font-weight:700}
+.sec-head a{font-size:13px;color:var(--blue);text-decoration:none}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;vertical-align:2px}
+.badge.new{background:var(--new);color:#fff}
+.badge.land{background:var(--sand-soft);color:var(--sand)}
+.badge.flat{background:var(--blue-soft);color:var(--blue)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;
+  margin-bottom:8px;display:block;text-decoration:none;color:inherit;position:relative}
+.card.is-new{border-left:4px solid var(--new)}
+.card .t{font-weight:600;font-size:15px;padding-right:60px}
+.card .p{font-weight:700;font-size:16px;margin-top:3px;color:var(--green)}
+.card .a{font-size:13.5px;color:var(--muted);margin-top:2px}
+.card .badge.new{position:absolute;top:12px;right:12px}
+.empty{color:var(--muted);font-size:14px;padding:14px 4px}
+/* конструктор */
+.builder{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.builder h2{font-size:16px;margin-bottom:12px}
+.f{margin-bottom:12px}
+.f label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:5px}
+.f select,.f input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;
+  font-size:15px;background:#fff}
+.row{display:flex;gap:10px}.row .f{flex:1}
+.builder .go{width:100%;padding:12px;border:0;border-radius:10px;background:var(--green);
+  color:#fff;font-size:15.5px;font-weight:700;cursor:pointer;margin-top:4px}
+.result{margin-top:14px;display:none}
+.result.show{display:block}
+.result a.open{display:block;text-align:center;padding:11px;border-radius:10px;
+  background:var(--blue);color:#fff;font-weight:700;text-decoration:none;margin-bottom:10px}
+.result p{font-size:13px;color:var(--muted);margin-bottom:6px}
+pre{background:#20281F;color:#DCE8DC;font-size:12px;padding:12px;border-radius:10px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+.note{font-size:13px;color:var(--muted);margin-top:16px;line-height:1.5}
+</style>
+</head>
+<body>
+<header>
+  <h1>Земля и квартиры · Астана</h1>
+  <div class="upd" id="updated">Загрузка…</div>
+</header>
+<main>
+  <div class="tabs">
+    <button id="tabFeed" class="on">Объявления</button>
+    <button id="tabBuild">Найти квартиру</button>
+  </div>
+
+  <div id="feed"></div>
+
+  <div id="build" style="display:none">
+    <div class="builder">
+      <h2>Опишите, какая квартира нужна</h2>
+      <div class="f"><label>Где</label>
+        <select id="bWhere">
+          <option value="astana">Астана — весь город</option>
+          <option value="astana-esilskij">Астана — район Есиль</option>
+          <option value="astana-almatinskij">Астана — район Алматы</option>
+          <option value="astana-saryarkinskij">Астана — район Сарыарка</option>
+          <option value="astana-bajkonyrskij">Астана — район Байконыр</option>
+          <option value="akmolinskaja-oblast">Акмолинская область (близ Астаны)</option>
+        </select>
+      </div>
+      <div class="row">
+        <div class="f"><label>Комнат</label>
+          <select id="bRooms">
+            <option value="">Любое</option><option>1</option><option>2</option>
+            <option>3</option><option>4</option><option value="5.100">5+</option>
+          </select>
+        </div>
+        <div class="f"><label>Площадь от, м²</label>
+          <input id="bArea" type="number" inputmode="numeric" placeholder="напр. 60">
+        </div>
+      </div>
+      <div class="row">
+        <div class="f"><label>Цена от, ₸</label>
+          <input id="bFrom" type="number" inputmode="numeric" placeholder="0"></div>
+        <div class="f"><label>Цена до, ₸</label>
+          <input id="bTo" type="number" inputmode="numeric" placeholder="напр. 40000000"></div>
+      </div>
+      <button class="go" id="bGo">Собрать поиск</button>
+      <div class="result" id="bRes">
+        <a class="open" id="bOpen" target="_blank" rel="noopener">Открыть на Krisha.kz →</a>
+        <p>Чтобы приложение следило за этим запросом автоматически — добавьте блок ниже в файл <b>searches.json</b> в репозитории:</p>
+        <pre id="bJson"></pre>
+      </div>
+    </div>
+    <p class="note">Робот проверяет все запросы из searches.json каждые 3 часа и помечает свежие объявления меткой «НОВОЕ».</p>
+  </div>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+
+/* вкладки */
+$('tabFeed').onclick=()=>{$('feed').style.display='';$('build').style.display='none';
+  $('tabFeed').classList.add('on');$('tabBuild').classList.remove('on');};
+$('tabBuild').onclick=()=>{$('feed').style.display='none';$('build').style.display='';
+  $('tabBuild').classList.add('on');$('tabFeed').classList.remove('on');};
+
+/* лента */
+const NEW_HOURS=24;
+fetch('data/listings.json?'+Date.now()).then(r=>{
+  if(!r.ok) throw 0; return r.json();
+}).then(d=>{
+  const upd=new Date(d.updated);
+  $('updated').textContent='Обновлено: '+upd.toLocaleString('ru-RU',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
+  const now=Date.now(), frag=[];
+  for(const s of d.searches){
+    const items=[...s.items].sort((a,b)=>new Date(b.first_seen)-new Date(a.first_seen));
+    const fresh=items.filter(i=>now-new Date(i.first_seen)<NEW_HOURS*36e5).length;
+    frag.push(`<section class="search"><div class="sec-head">
+      <h2>${esc(s.title)} <span class="badge ${s.type}">${s.type==='land'?'участки':'квартиры'}</span>
+      ${fresh?`<span class="badge new">+${fresh} новых</span>`:''}</h2>
+      <a href="${esc(s.url)}" target="_blank" rel="noopener">на Krisha →</a></div>`);
+    if(!items.length) frag.push('<div class="empty">Пока пусто — данные появятся после первого запуска робота.</div>');
+    for(const i of items.slice(0,15)){
+      const isNew=now-new Date(i.first_seen)<NEW_HOURS*36e5;
+      frag.push(`<a class="card${isNew?' is-new':''}" href="${esc(i.url)}" target="_blank" rel="noopener">
+        ${isNew?'<span class="badge new">НОВОЕ</span>':''}
+        <div class="t">${esc(i.title)}</div>
+        <div class="p">${esc(i.price)}</div>
+        <div class="a">${esc(i.address)}</div></a>`);
+    }
+    frag.push('</section>');
+  }
+  $('feed').innerHTML=frag.join('');
+}).catch(()=>{
+  $('updated').textContent='Данных пока нет';
+  $('feed').innerHTML='<div class="empty">Файл data/listings.json ещё не создан. Запустите workflow «Обновление объявлений» во вкладке Actions на GitHub — и объявления появятся здесь.</div>';
+});
+
+function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+/* конструктор */
+$('bGo').onclick=()=>{
+  const where=$('bWhere').value, rooms=$('bRooms').value,
+        from=$('bFrom').value, to=$('bTo').value, area=$('bArea').value;
+  const p=new URLSearchParams();
+  if(rooms) p.set('das[live.rooms]',rooms);
+  if(from)  p.set('das[price][from]',from);
+  if(to)    p.set('das[price][to]',to);
+  if(area)  p.set('das[live.square][from]',area);
+  const url=`https://krisha.kz/prodazha/kvartiry/${where}/`+(p.toString()?'?'+p.toString():'');
+  const whereName=$('bWhere').selectedOptions[0].textContent;
+  const title=`${rooms?rooms+'-комн. ':''}квартира, ${whereName}${to?', до '+Number(to).toLocaleString('ru-RU')+' ₸':''}`;
+  $('bOpen').href=url;
+  $('bJson').textContent=JSON.stringify(
+    {id:'flat-'+Date.now().toString(36),title,url,type:'flat'},null,2)+',';
+  $('bRes').classList.add('show');
+};
+</script>
+</body>
+</html>

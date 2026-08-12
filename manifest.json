@@ -1,0 +1,9 @@
+{
+  "name": "Земля и квартиры · Астана",
+  "short_name": "Недвижимость",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#F2F4F1",
+  "theme_color": "#1C3A2E",
+  "icons": []
+}
